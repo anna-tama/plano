@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario con Firebase</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Incluye Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Registro de Usuarios</h1>
+            <a href="listado.html" class="btn">Ver Listado</a>
+        </header>
+        
+        <main class="main-content">
+            <form id="registroForm" class="form">
+                <div class="form-group">
+                    <label for="fecha">Fecha:</label>
+                    <input type="date" id="fecha" name="fecha" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" id="nombre" name="nombre" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="apellido">Apellido:</label>
+                    <input type="text" id="apellido" name="apellido" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </form>
+            
+            <div id="mensaje" class="mensaje"></div>
+        </main>
+    </div>
+    
+    <script src="js/firebase-config.js"></script>
+    <script src="js/form.js"></script>
+</body>
+</html>
