@@ -6,7 +6,50 @@ document.addEventListener('DOMContentLoaded', function () {
         { id: 'Sala B' },
     ];
 
-     function createRadioButtons() {
+    const religions = [
+        { id: 'cristianismo', label: 'Cristianismo', value: 'cristianismo' },
+        { id: 'budismo', label: 'Budismo', value: 'budismo' },
+        { id: 'judaismo', label: 'Judaísmo', value: 'judaismo' },
+        { id: 'evangelismo', label: 'Evangelismo', value: 'evangelismo' },
+        { id: 'umbandismo', label: 'Umbandismo', value: 'umbandismo' },
+        { id: 'none', label: 'Ninguno', value: 'none' },
+    ];
+
+    const DESTINATIONS = [
+        { label: 'Crematorio: Burzaco' },
+        { label: 'Cementerio: Camposanto' },
+        { label: 'Crematorio: Cementerio Libertad' },
+        { label: 'Cementerio: Chacarita' },
+        { label: 'Cementerio: Colonial' },
+        { label: 'Cementerio: Flores' },
+        { label: 'Cementerio: Jardin de Paz Pilar' },
+        { label: 'Cementerio: Lar de Paz' },
+        { label: 'Cementerio: Las Praderas' },
+        { label: 'Cementerio: Libertad' },
+        { label: 'Crematorio: Lomas de Zamora' },
+        { label: 'Crematorio: Los Ceibos' },
+        { label: 'Cementerio: Los Ceibos' },
+        { label: 'Crematorio: Monte Paraiso' },
+        { label: 'Cementerio: Moron' },
+        { label: 'Crematorio: Moron' },
+        { label: 'Cementerio: Olivos' },
+        { label: 'Cementerio: Pablo Podesta' },
+        { label: 'Cementerio: Paraguay' },
+        { label: 'Cementerio: Parque Hurlingham' },
+        { label: 'Cementerio: Parque Iraola' },
+        { label: 'Cementerio: San Justo' },
+        { label: 'Cementerio: San Martin' },
+        { label: 'Crematorio: San Martin' },
+        { label: 'Cementerio: Villegas' },
+    ];
+
+    // Elementos del DOM
+    const selectElement = document.getElementById('destination-select');
+    const otherContainer = document.getElementById('other-destination-container');
+    const newDestinationInput = document.getElementById('newDestination');
+    const addButton = document.getElementById('add-destination-btn');
+
+    function createRadioButtons() {
         const container = document.getElementById('radio-container');
 
         // Verificar que el contenedor existe
@@ -20,13 +63,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Crear grupo de radio buttons
         const radioGroup = document.createElement('div');
-        radioGroup.className = 'radio-group mb-3'; // Agregamos clase de Bootstrap
-
-        // Crear título
-        const title = document.createElement('h6'); // Cambiamos a h6 para mejor integración
-        title.textContent = 'Seleccione una sala:';
-        title.className = 'mb-3'; // Margen inferior
-        radioGroup.appendChild(title);
 
         // Crear radio buttons
         rooms.forEach((room, index) => {
@@ -67,6 +103,115 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     createRadioButtons();
 
+    function renderReligionRadios() {
+        const container = document.getElementById('religion-radios');
+
+        if (!container) {
+            console.error('No se encontró el contenedor para los radios de religión');
+            return;
+        }
+
+        container.innerHTML = ''; // Limpiar contenedor
+
+        religions.forEach(religion => {
+            const radioDiv = document.createElement('div');
+            radioDiv.className = 'form-check form-check-inline';
+
+            const radioInput = document.createElement('input');
+            radioInput.type = 'radio';
+            radioInput.id = religion.id;
+            radioInput.name = 'religion';
+            radioInput.value = religion.value;
+            radioInput.className = 'form-check-input';
+
+            // Seleccionar "cristianismo" por defecto
+            if (religion.value === 'cristianismo') {
+                radioInput.checked = true;
+            }
+
+            const label = document.createElement('label');
+            label.htmlFor = religion.id;
+            label.className = 'form-check-label';
+            label.textContent = religion.label;
+
+            radioDiv.appendChild(radioInput);
+            radioDiv.appendChild(label);
+            container.appendChild(radioDiv);
+        });
+
+        // Manejar cambios en la selección
+        container.addEventListener('change', function (e) {
+            if (e.target.name === 'religion') {
+                console.log('Religión seleccionada:', e.target.value);
+                // Aquí puedes agregar lógica adicional cuando cambia la selección
+            }
+        });
+    }
+
+    // Llamar a la función para renderizar los radios
+    renderReligionRadios();
+
+
+    // Llenar el select con las opciones
+    function populateSelect() {
+        // Limpiar select
+        selectElement.innerHTML = '';
+
+        // Agregar opciones predeterminadas
+        DESTINATIONS.forEach(dest => {
+            const option = document.createElement('option');
+            option.value = dest.label;
+            option.textContent = dest.label;
+            selectElement.appendChild(option);
+        });
+
+        // Agregar opción "Otro..."
+        const otherOption = document.createElement('option');
+        otherOption.value = 'otro';
+        otherOption.textContent = 'Otro...';
+        selectElement.appendChild(otherOption);
+    }
+
+    // Manejar cambio de selección
+    function handleDestinationChange() {
+        if (selectElement.value === 'otro') {
+            otherContainer.style.display = 'block';
+            newDestinationInput.focus();
+        } else {
+            otherContainer.style.display = 'none';
+            newDestinationInput.value = '';
+        }
+    }
+
+    // Agregar nuevo destino
+    function addNewDestination() {
+        const newDest = newDestinationInput.value.trim();
+
+        if (newDest) {
+            // Agregar al array de destinos
+            DESTINATIONS.push({ label: newDest });
+
+            // Actualizar el select
+            populateSelect();
+
+            // Seleccionar el nuevo destino
+            selectElement.value = newDest;
+
+            // Ocultar el campo de nuevo destino
+            otherContainer.style.display = 'none';
+            newDestinationInput.value = '';
+        } else {
+            alert('Por favor ingrese un destino válido');
+        }
+    }
+
+    // Event listeners
+    selectElement.addEventListener('change', handleDestinationChange);
+    addButton.addEventListener('click', addNewDestination);
+
+    // Inicializar
+    populateSelect();
+
 
     form.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -78,7 +223,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const dateDeparture = form.dateDeparture.value;
         const timeDeparture = form.timeDeparture.value;
         const room = form.room.value;
-
+        const religion = form.religion.value;
+        const destinations = form.destinations.value;
 
         console.log("Intentando guardar...");
         // Guardar en Firestore
@@ -89,7 +235,9 @@ document.addEventListener('DOMContentLoaded', function () {
             timeEntry: timeEntry,
             dateDeparture: dateDeparture,
             timeDeparture: timeDeparture,
-            room:room,
+            room: room,
+            religion: religion,
+            destinations: destinations,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         })
             .then(() => {
@@ -112,7 +260,4 @@ document.addEventListener('DOMContentLoaded', function () {
                 mensaje.className = 'mensaje error';
             });
     });
-
-
-   
 });

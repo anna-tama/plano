@@ -20,13 +20,26 @@ document.addEventListener('DOMContentLoaded', function () {
             registroItem.innerHTML = `
                 <div class="registro-info">
                     <div class="registro-nombre">${registro.firstName} ${registro.lastName}</div>
-                    <div class="registro-fecha">${formatFecha(registro.fecha)}</div>
                 </div>
             `;
+
+            // Agregar evento click al nombre
+            const nombreElement = registroItem.querySelector('.registro-nombre');
+            nombreElement.style.cursor = 'pointer'; // Cambiar cursor a pointer
+            nombreElement.addEventListener('click', function() {
+                // Codificar los parámetros para URL
+                const params = new URLSearchParams();
+                params.append('firstName', encodeURIComponent(registro.firstName));
+                params.append('lastName', encodeURIComponent(registro.lastName));
+                
+                // Redireccionar a billboard.html con los parámetros
+                window.location.href = `billboard.html?${params.toString()}`;
+            });
 
             listaRegistros.appendChild(registroItem);
         });
     }
+
 
     // Formatear fecha
     function formatFecha(fechaStr) {
@@ -46,21 +59,21 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error al cargar registros: ', error);
         });
 
-    // Busqueda en tiempo real
-    busqueda.addEventListener('input', function () {
-        const textoBusqueda = this.value.toLowerCase();
+    // // Busqueda en tiempo real
+    // busqueda.addEventListener('input', function () {
+    //     const textoBusqueda = this.value.toLowerCase();
 
-        db.collection('registros')
-            .orderBy('firstName')
-            .startAt(textoBusqueda)
-            .endAt(textoBusqueda + '\uf8ff')
-            .get()
-            .then(querySnapshot => {
-                renderRegistros(querySnapshot.docs);
-            })
-            .catch(error => {
-                console.error('Error al buscar: ', error);
-            });
-    });
+    //     db.collection('registros')
+    //         .orderBy('firstName')
+    //         .startAt(textoBusqueda)
+    //         .endAt(textoBusqueda + '\uf8ff')
+    //         .get()
+    //         .then(querySnapshot => {
+    //             renderRegistros(querySnapshot.docs);
+    //         })
+    //         .catch(error => {
+    //             console.error('Error al buscar: ', error);
+    //         });
+    // });
 
 });
