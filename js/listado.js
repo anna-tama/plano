@@ -26,12 +26,21 @@ document.addEventListener('DOMContentLoaded', function () {
             // Agregar evento click al nombre
             const nombreElement = registroItem.querySelector('.registro-nombre');
             nombreElement.style.cursor = 'pointer'; // Cambiar cursor a pointer
-            nombreElement.addEventListener('click', function() {
+            nombreElement.addEventListener('click', function () {
                 // Codificar los parámetros para URL
                 const params = new URLSearchParams();
                 params.append('firstName', encodeURIComponent(registro.firstName));
                 params.append('lastName', encodeURIComponent(registro.lastName));
-                
+                params.append('dateEntry', encodeURIComponent(registro.dateEntry));
+                params.append('timeEntry', encodeURIComponent(registro.timeEntry));
+                params.append('dateDeparture', encodeURIComponent(registro.dateDeparture));
+                params.append('timeDeparture', encodeURIComponent(registro.timeDeparture));
+                params.append('room', encodeURIComponent(registro.room));
+                params.append('religion', encodeURIComponent(registro.religion));
+                params.append('destinations', encodeURIComponent(registro.destinations));
+       
+
+
                 // Redireccionar a billboard.html con los parámetros
                 window.location.href = `billboard.html?${params.toString()}`;
             });
