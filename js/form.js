@@ -1,263 +1,252 @@
+
+  
+    // form.js
 document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('registroForm');
-    const mensaje = document.getElementById('mensaje');
-    const rooms = [
-        { id: 'Sala A' },
-        { id: 'Sala B' },
+    // Obtener parámetros de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const registroId = urlParams.get('id');
+
+    // Si estamos editando (hay ID en la URL)
+    if (registroId) {
+        cargarRegistroParaEdicion(registroId);
+    } else {
+        // Inicializar formulario para nuevo registro
+        inicializarFormulario();
+    }
+
+    // Configurar listeners y lógica del formulario
+    configurarFormulario();
+});
+
+function cargarRegistroParaEdicion(registroId) {
+    db.collection('registros').doc(registroId).get()
+        .then(doc => {
+            if (doc.exists) {
+                const registro = doc.data();
+
+                // Llenar campos básicos
+                document.getElementById('firstName').value = registro.firstName || '';
+                document.getElementById('lastName').value = registro.lastName || '';
+                document.getElementById('dateEntry').value = registro.dateEntry || '';
+                document.getElementById('timeEntry').value = registro.timeEntry || '';
+                document.getElementById('dateDeparture').value = registro.dateDeparture || '';
+                document.getElementById('timeDeparture').value = registro.timeDeparture || '';
+
+                // Configurar radio buttons de religión
+                if (registro.religion) {
+                    const religionRadio = document.querySelector(`input[name="religion"][value="${registro.religion}"]`);
+                    if (religionRadio) {
+                        religionRadio.checked = true;
+                    }
+                }
+
+                // Configurar radio buttons de sala
+                if (registro.room) {
+                    const roomRadio = document.querySelector(`input[name="room"][value="${registro.room}"]`);
+                    if (roomRadio) {
+                        roomRadio.checked = true;
+                    }
+                }
+
+                // Configurar select de destino
+                if (registro.destinations) {
+                    const destinationSelect = document.getElementById('destination-select');
+                    const option = Array.from(destinationSelect.options)
+                        .find(opt => opt.value === registro.destinations);
+
+                    if (option) {
+                        option.selected = true;
+                    } else {
+                        // Si el destino no está en las opciones, agregarlo
+                        const newOption = new Option(registro.destinations, registro.destinations);
+                        destinationSelect.add(newOption);
+                        newOption.selected = true;
+                    }
+                }
+
+                // Inicializar el resto del formulario
+                inicializarFormulario();
+
+            } else {
+                console.error("No se encontró el registro");
+                alert("Registro no encontrado");
+                window.location.href = 'listado.html';
+            }
+        })
+        .catch(error => {
+            console.error("Error al cargar registro:", error);
+            alert("Error al cargar el registro");
+        });
+}
+
+function inicializarFormulario() {
+    // Configurar radios de religión
+    const religions = ['cristianismo', 'judaísmo', 'islam', 'budismo', 'hinduismo', 'ninguna'];
+    const religionContainer = document.getElementById('religion-radios');
+
+    religions.forEach(religion => {
+        const div = document.createElement('div');
+        div.className = 'form-check form-check-inline';
+
+        div.innerHTML = `
+            <input class="form-check-input" type="radio" name="religion" id="religion-${religion}" value="${religion}">
+            <label class="form-check-label" for="religion-${religion}">${religion.charAt(0).toUpperCase() + religion.slice(1)}</label>
+        `;
+
+        religionContainer.appendChild(div);
+    });
+
+    // Configurar radios de sala
+    const rooms = ['Sala 1', 'Sala 2'];
+    const radioContainer = document.getElementById('radio-container');
+
+    rooms.forEach(room => {
+        const div = document.createElement('div');
+        div.className = 'form-check form-check-inline';
+
+        div.innerHTML = `
+            <input class="form-check-input" type="radio" name="room" id="room-${room.replace(' ', '-')}" value="${room}"
+                   ${room === 'Sala 1' ? 'checked' : ''}>
+            <label class="form-check-label" for="room-${room.replace(' ', '-')}">${room}</label>
+        `;
+
+        radioContainer.appendChild(div);
+    });
+
+    // Configurar select de destinos
+    const destinations = [
+        'Crematorio: Burzaco',
+        'Cementerio: Camposanto',
+        'Crematorio: Cementerio Libertad',
+        'Cementerio: Chacarita',
+        'Cementerio: Colonial',
+        'Cementerio: Flores',
+        'Cementerio: Jardin de Paz Pilar',
+        'Cementerio: Lar de Paz',
+        'Cementerio: Las Praderas',
+        'Cementerio: Libertad',
+        'Crematorio: Lomas de Zamora',
+        'Crematorio: Los Ceibos',
+        'Cementerio: Los Ceibos',
+        'Crematorio: Monte Paraiso',
+        'Cementerio: Moron',
+        'Crematorio: Moron',
+        'Cementerio: Olivos',
+        'Cementerio: Pablo Podesta',
+        'Cementerio: Paraguay',
+        'Cementerio: Parque Hurlingham',
+        'Cementerio: Parque Iraola',
+        'Cementerio: San Justo',
+        'Cementerio: San Martin',
+        'Crematorio: San Martin',
+        'Cementerio: Villegas',
+        'Otro'
     ];
 
-    const religions = [
-        { id: 'cristianismo', label: 'Cristianismo', value: 'cristianismo' },
-        { id: 'budismo', label: 'Budismo', value: 'budismo' },
-        { id: 'judaismo', label: 'Judaísmo', value: 'judaismo' },
-        { id: 'evangelismo', label: 'Evangelismo', value: 'evangelismo' },
-        { id: 'umbandismo', label: 'Umbandismo', value: 'umbandismo' },
-        { id: 'none', label: 'Ninguno', value: 'none' },
-    ];
+    const destinationSelect = document.getElementById('destination-select');
 
-    const DESTINATIONS = [
-        { label: 'Crematorio: Burzaco' },
-        { label: 'Cementerio: Camposanto' },
-        { label: 'Crematorio: Cementerio Libertad' },
-        { label: 'Cementerio: Chacarita' },
-        { label: 'Cementerio: Colonial' },
-        { label: 'Cementerio: Flores' },
-        { label: 'Cementerio: Jardin de Paz Pilar' },
-        { label: 'Cementerio: Lar de Paz' },
-        { label: 'Cementerio: Las Praderas' },
-        { label: 'Cementerio: Libertad' },
-        { label: 'Crematorio: Lomas de Zamora' },
-        { label: 'Crematorio: Los Ceibos' },
-        { label: 'Cementerio: Los Ceibos' },
-        { label: 'Crematorio: Monte Paraiso' },
-        { label: 'Cementerio: Moron' },
-        { label: 'Crematorio: Moron' },
-        { label: 'Cementerio: Olivos' },
-        { label: 'Cementerio: Pablo Podesta' },
-        { label: 'Cementerio: Paraguay' },
-        { label: 'Cementerio: Parque Hurlingham' },
-        { label: 'Cementerio: Parque Iraola' },
-        { label: 'Cementerio: San Justo' },
-        { label: 'Cementerio: San Martin' },
-        { label: 'Crematorio: San Martin' },
-        { label: 'Cementerio: Villegas' },
-    ];
+    destinations.forEach(dest => {
+        const option = document.createElement('option');
+        option.value = dest;
+        option.textContent = dest;
+        destinationSelect.appendChild(option);
+    });
 
-    // Elementos del DOM
-    const selectElement = document.getElementById('destination-select');
-    const otherContainer = document.getElementById('other-destination-container');
-    const newDestinationInput = document.getElementById('newDestination');
-    const addButton = document.getElementById('add-destination-btn');
-
-    function createRadioButtons() {
-        const container = document.getElementById('radio-container');
-
-        // Verificar que el contenedor existe
-        if (!container) {
-            console.error('El elemento con ID "radio-container" no fue encontrado en el DOM');
-            return;
-        }
-
-        // Limpiar el contenedor primero
-        container.innerHTML = '';
-
-        // Crear grupo de radio buttons
-        const radioGroup = document.createElement('div');
-
-        // Crear radio buttons
-        rooms.forEach((room, index) => {
-            const optionDiv = document.createElement('div');
-            optionDiv.className = 'form-check'; // Clase de Bootstrap para radios
-
-            const radio = document.createElement('input');
-            radio.type = 'radio';
-            radio.id = `room-${index}`;
-            radio.name = 'room';
-            radio.value = room.id;
-            radio.className = 'form-check-input'; // Clase de Bootstrap
-
-            // Seleccionar el primero por defecto
-            if (index === 0) {
-                radio.checked = true;
-            }
-
-            const label = document.createElement('label');
-            label.htmlFor = `room-${index}`;
-            label.textContent = room.id;
-            label.className = 'form-check-label'; // Clase de Bootstrap
-
-            optionDiv.appendChild(radio);
-            optionDiv.appendChild(label);
-            radioGroup.appendChild(optionDiv);
-        });
-
-        container.appendChild(radioGroup);
-
-        // Manejar cambios en la selección
-        container.addEventListener('change', function (e) {
-            if (e.target.name === 'room-selection' && e.target.checked) {
-                console.log('Sala seleccionada:', e.target.value);
-                // Aquí puedes agregar lógica adicional
-            }
-        });
-    }
-    createRadioButtons();
-
-    function renderReligionRadios() {
-        const container = document.getElementById('religion-radios');
-
-        if (!container) {
-            console.error('No se encontró el contenedor para los radios de religión');
-            return;
-        }
-
-        container.innerHTML = ''; // Limpiar contenedor
-
-        religions.forEach(religion => {
-            const radioDiv = document.createElement('div');
-            radioDiv.className = 'form-check form-check-inline';
-
-            const radioInput = document.createElement('input');
-            radioInput.type = 'radio';
-            radioInput.id = religion.id;
-            radioInput.name = 'religion';
-            radioInput.value = religion.value;
-            radioInput.className = 'form-check-input';
-
-            // Seleccionar "cristianismo" por defecto
-            if (religion.value === 'cristianismo') {
-                radioInput.checked = true;
-            }
-
-            const label = document.createElement('label');
-            label.htmlFor = religion.id;
-            label.className = 'form-check-label';
-            label.textContent = religion.label;
-
-            radioDiv.appendChild(radioInput);
-            radioDiv.appendChild(label);
-            container.appendChild(radioDiv);
-        });
-
-        // Manejar cambios en la selección
-        container.addEventListener('change', function (e) {
-            if (e.target.name === 'religion') {
-                console.log('Religión seleccionada:', e.target.value);
-                // Aquí puedes agregar lógica adicional cuando cambia la selección
-            }
-        });
+    // Configurar valores por defecto solo para nuevo registro (no edición)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (!urlParams.get('id')) {
+        // Establecer fecha y hora actual
+        const now = new Date();
+        const today = now.toISOString().split('T')[0];
+        const time = now.toTimeString().substring(0, 5); // Formato HH:mm
+        
+        // Establecer valores por defecto
+        document.getElementById('dateEntry').value = today;
+        document.getElementById('timeEntry').value = time;
+        document.getElementById('dateDeparture').value = today;
+        document.getElementById('timeDeparture').value = time;
+        
+        // Sala 1 ya está seleccionada por defecto en el radio button
     }
 
-    // Llamar a la función para renderizar los radios
-    renderReligionRadios();
+    // Configurar evento para mostrar campo "Otro destino"
+    destinationSelect.addEventListener('change', function () {
+        const otherContainer = document.getElementById('other-destination-container');
+        otherContainer.style.display = this.value === 'Otro' ? 'block' : 'none';
+    });
 
-
-    // Llenar el select con las opciones
-    function populateSelect() {
-        // Limpiar select
-        selectElement.innerHTML = '';
-
-        // Agregar opciones predeterminadas
-        DESTINATIONS.forEach(dest => {
-            const option = document.createElement('option');
-            option.value = dest.label;
-            option.textContent = dest.label;
-            selectElement.appendChild(option);
-        });
-
-        // Agregar opción "Otro..."
-        const otherOption = document.createElement('option');
-        otherOption.value = 'otro';
-        otherOption.textContent = 'Otro...';
-        selectElement.appendChild(otherOption);
-    }
-
-    // Manejar cambio de selección
-    function handleDestinationChange() {
-        if (selectElement.value === 'otro') {
-            otherContainer.style.display = 'block';
-            newDestinationInput.focus();
-        } else {
-            otherContainer.style.display = 'none';
-            newDestinationInput.value = '';
-        }
-    }
-
-    // Agregar nuevo destino
-    function addNewDestination() {
-        const newDest = newDestinationInput.value.trim();
-
+    // Configurar botón para agregar nuevo destino
+    document.getElementById('add-destination-btn').addEventListener('click', function () {
+        const newDest = document.getElementById('newDestination').value.trim();
         if (newDest) {
-            // Agregar al array de destinos
-            DESTINATIONS.push({ label: newDest });
-
-            // Actualizar el select
-            populateSelect();
-
-            // Seleccionar el nuevo destino
-            selectElement.value = newDest;
-
-            // Ocultar el campo de nuevo destino
-            otherContainer.style.display = 'none';
-            newDestinationInput.value = '';
-        } else {
-            alert('Por favor ingrese un destino válido');
+            const select = document.getElementById('destination-select');
+            const option = new Option(newDest, newDest);
+            select.add(option);
+            option.selected = true;
+            document.getElementById('newDestination').value = '';
+            document.getElementById('other-destination-container').style.display = 'none';
         }
-    }
-
-    // Event listeners
-    selectElement.addEventListener('change', handleDestinationChange);
-    addButton.addEventListener('click', addNewDestination);
-
-    // Inicializar
-    populateSelect();
-
+    });
+}
+function configurarFormulario() {
+    const form = document.getElementById('registroForm');
 
     form.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        const firstName = form.firstName.value;
-        const lastName = form.lastName.value;
-        const dateEntry = form.dateEntry.value;
-        const timeEntry = form.timeEntry.value;
-        const dateDeparture = form.dateDeparture.value;
-        const timeDeparture = form.timeDeparture.value;
-        const room = form.room.value;
-        const religion = form.religion.value;
-        const destinations = form.destinations.value;
-
-        console.log("Intentando guardar...");
-        // Guardar en Firestore
-        db.collection('registros').add({
-            firstName: firstName,
-            lastName: lastName,
-            dateEntry: dateEntry,
-            timeEntry: timeEntry,
-            dateDeparture: dateDeparture,
-            timeDeparture: timeDeparture,
-            room: room,
-            religion: religion,
-            destinations: destinations,
+        // Obtener valores del formulario
+        const formData = {
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            dateEntry: document.getElementById('dateEntry').value,
+            timeEntry: document.getElementById('timeEntry').value,
+            dateDeparture: document.getElementById('dateDeparture').value,
+            timeDeparture: document.getElementById('timeDeparture').value,
+            religion: document.querySelector('input[name="religion"]:checked')?.value || '',
+            room: document.querySelector('input[name="room"]:checked')?.value || '',
+            destinations: document.getElementById('destination-select').value,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        })
-            .then(() => {
-                // Mostrar mensaje de éxito
-                mensaje.textContent = 'Registro guardado correctamente!';
-                mensaje.className = 'mensaje success';
+        };
 
-                // Limpiar el formulario
-                form.reset();
+        // Obtener ID si estamos editando
+        const urlParams = new URLSearchParams(window.location.search);
+        const registroId = urlParams.get('id');
 
-                // Ocultar mensaje después de 3 segundos
-                setTimeout(() => {
-                    mensaje.className = 'mensaje';
-                    mensaje.textContent = '';
-                }, 3000);
-            })
-            .catch(error => {
-                console.error('Error al guardar: ', error);
-                mensaje.textContent = 'Error al guardar el registro: ' + error.message;
-                mensaje.className = 'mensaje error';
-            });
+        // Guardar en Firestore
+        if (registroId) {
+            // Actualizar registro existente
+            db.collection('registros').doc(registroId).update(formData)
+                .then(() => {
+                    mensaje.textContent = 'Registro actualizado correctamente';
+                    mensaje.className = 'mensaje success';
+                    form.reset();
+
+                    setTimeout(() => {
+                        window.location.href = 'listado.html';
+                    }, 3000);
+                })
+                 .catch(error => {
+                    console.error('Error al guardar: ', error);
+                    mensaje.textContent = 'Error al guardar el registro: ' + error.message;
+                    mensaje.className = 'mensaje error';
+                });
+        } else {
+            // Crear nuevo registro
+            db.collection('registros').add(formData)
+                .then(() => {
+                    mensaje.textContent = 'Registro guardado correctamente';
+                    mensaje.className = 'mensaje success';
+                    form.reset();
+
+                    setTimeout(() => {
+                        window.location.href = 'listado.html';
+                    }, 3000);
+                })
+                .catch(error => {
+                    console.error('Error al guardar: ', error);
+                    mensaje.textContent = 'Error al guardar el registro: ' + error.message;
+                    mensaje.className = 'mensaje error';
+                });
+        }
     });
-});
+}

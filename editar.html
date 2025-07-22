@@ -4,12 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuevo Registro</title>
+    <title>Editar Registro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <!-- Incluye Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 </head>
@@ -22,13 +21,11 @@
                     <div class="card shadow-2-strong card-registration" style="border-radius: 15px;">
                         <div class="card-body p-4 px-md-5">
                             <div class="d-flex justify-content-between align-items-center mb-3 pb-2">
-                                <h3 class=" pb-md-0 ">Nuevo Registro</h3>
+                                <h3 class=" pb-md-0 ">Editar Registro</h3>
                                 <a href="listado.html" class="btn btn-warning btn-lg">Ver Listado</a>
                             </div>
 
                             <form id="registroForm" class="form">
-
-
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <div data-mdb-input-init class="form-outline">
@@ -62,7 +59,7 @@
                                                 <input id="timeEntry" type="time" class="form-control form-custom"
                                                     formControlName="timeEntry" name="timeEntry">
                                             </div>
-                                            <label for="timeEntry" class="form-label">Hora Entrada (hh:mm)</label>                            
+                                            <label for="timeEntry" class="form-label">Hora Entrada (hh:mm)</label>
                                         </div>
                                     </div>
                                 </div>
@@ -106,7 +103,7 @@
                                         </select>
                                     </div>
                                     <div id="other-destination-container" class="mb-3" style="display: none;">
-                                        <label for="newDestination" class="form-label mt-3">Nuevo destino</label>
+                                        <label for="newDestination" class="form-label">Nuevo destino</label>
                                         <input id="newDestination" type="text" class="form-control"
                                             name="newDestination" placeholder="Ingrese nuevo destino" />
                                         <button id="add-destination-btn" class="btn btn-sm btn-primary mt-2"
@@ -117,7 +114,7 @@
                                 </div>
 
 
-                                <button type="submit" class="btn btn-primary mt-4">Guardar</button>
+                                <button type="submit" class="btn btn-primary mt-4">Editar</button>
                             </form>
 
                             <div id="mensaje" class="mensaje"></div>

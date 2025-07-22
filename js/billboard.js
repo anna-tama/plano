@@ -24,31 +24,39 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('destination').textContent = destinations;
 
     // Si necesitas manejar la religión para mostrar una imagen
-    if (religion && religion !== 'none') {
-        // Aquí puedes agregar lógica para mostrar la imagen de la religión
-        console.log('Religión:', religion);
-
-        if (religion && religion.toLowerCase() === 'cristianismo') {
-            religionContainer.style.display = 'block';
-            religionImage.src = 'assets/img/religion/cristianismo.svg';
-            religionImage.alt = 'Símbolo Cristiano';
-        } else if (religion && religion.toLowerCase() === 'evangelismo') {
-            religionContainer.style.display = 'block';
-            religionImage.src = 'assets/img/religion/evangelismo.svg';
-            religionImage.alt = 'Símbolo Evangélico';
-        } else if (religion && religion.toLowerCase() === 'judaismo') {
-            religionContainer.style.display = 'block';
-            religionImage.src = 'assets/img/religion/judaísmo.svg';
-            religionImage.alt = 'Símbolo Juído';
-        } else if (religion && religion.toLowerCase() === 'umbandismo') {
-            religionContainer.style.display = 'block';
-            religionImage.src = 'assets/img/religion/umbandismo.svg';
-            religionImage.alt = 'Símbolo Umbanda';
-        } else if (religion && religion.toLowerCase() === 'budismo') {
-            religionContainer.style.display = 'block';
-            religionImage.src = 'assets/img/religion/budismo.svg';
-            religionImage.alt = 'Símbolo Budista';
+    if (religion && religion.toLowerCase() !== 'ninguna') {
+        // Mostrar el contenedor y establecer la imagen según la religión
+        religionContainer.style.display = 'block';
+        console.log('religion',religion)
+        
+        switch(religion.toLowerCase()) {
+            case 'cristianismo':
+                religionImage.src = 'assets/img/religion/cristianismo.svg';
+                religionImage.alt = 'Símbolo Cristiano';
+                break;
+            case 'evangelismo':
+                religionImage.src = 'assets/img/religion/evangelismo.svg';
+                religionImage.alt = 'Símbolo Evangélico';
+                break;
+            case 'judaismo':
+                religionImage.src = 'assets/img/religion/judaísmo.svg';
+                religionImage.alt = 'Símbolo Judío';
+                break;
+            case 'umbandismo':
+                religionImage.src = 'assets/img/religion/umbandismo.svg';
+                religionImage.alt = 'Símbolo Umbanda';
+                break;
+            case 'budismo':
+                religionImage.src = 'assets/img/religion/budismo.svg';
+                religionImage.alt = 'Símbolo Budista';
+                break;
+            default:
+                // Ocultar si no es una religión reconocida
+                religionContainer.style.display = 'none';
         }
+    } else {
+        // Ocultar el contenedor si la religión es "ninguna" o no está definida
+        religionContainer.style.display = 'none';
     }
 });
 
