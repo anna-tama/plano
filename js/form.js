@@ -1,6 +1,6 @@
 
-  
-    // form.js
+
+// form.js
 document.addEventListener('DOMContentLoaded', function () {
     // Obtener parámetros de la URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function cargarRegistroParaEdicion(registroId) {
+    inicializarFormulario();
+
     db.collection('registros').doc(registroId).get()
         .then(doc => {
             if (doc.exists) {
@@ -34,7 +36,7 @@ function cargarRegistroParaEdicion(registroId) {
 
                 // Configurar radio buttons de religión
                 if (registro.religion) {
-                    const religionRadio = document.querySelector(`input[name="religion"][value="${registro.religion}"]`);
+                    const religionRadio = document.querySelector(`input[name="religion"][value="${registro.religion.toLowerCase()}"]`);
                     if (religionRadio) {
                         religionRadio.checked = true;
                     }
@@ -64,9 +66,6 @@ function cargarRegistroParaEdicion(registroId) {
                     }
                 }
 
-                // Inicializar el resto del formulario
-                inicializarFormulario();
-
             } else {
                 console.error("No se encontró el registro");
                 alert("Registro no encontrado");
@@ -88,16 +87,22 @@ function inicializarFormulario() {
         const div = document.createElement('div');
         div.className = 'form-check form-check-inline';
 
+        // Marcar "cristianismo" como checked por defecto
+        const isChecked = religion === 'cristianismo' ? 'checked' : '';
+
         div.innerHTML = `
-            <input class="form-check-input" type="radio" name="religion" id="religion-${religion}" value="${religion}">
-            <label class="form-check-label" for="religion-${religion}">${religion.charAt(0).toUpperCase() + religion.slice(1)}</label>
+            <input class="form-check-input" type="radio" name="religion" 
+                   id="religion-${religion}" value="${religion}" ${isChecked}>
+            <label class="form-check-label" for="religion-${religion}">
+                ${religion.charAt(0).toUpperCase() + religion.slice(1)}
+            </label>
         `;
 
         religionContainer.appendChild(div);
     });
 
     // Configurar radios de sala
-    const rooms = ['Sala 1', 'Sala 2'];
+    const rooms = ['Sala: A', 'Sala: B'];
     const radioContainer = document.getElementById('radio-container');
 
     rooms.forEach(room => {
@@ -106,7 +111,7 @@ function inicializarFormulario() {
 
         div.innerHTML = `
             <input class="form-check-input" type="radio" name="room" id="room-${room.replace(' ', '-')}" value="${room}"
-                   ${room === 'Sala 1' ? 'checked' : ''}>
+                   ${room === 'Sala: A' ? 'checked' : ''}>
             <label class="form-check-label" for="room-${room.replace(' ', '-')}">${room}</label>
         `;
 
@@ -159,14 +164,14 @@ function inicializarFormulario() {
         const now = new Date();
         const today = now.toISOString().split('T')[0];
         const time = now.toTimeString().substring(0, 5); // Formato HH:mm
-        
+
         // Establecer valores por defecto
         document.getElementById('dateEntry').value = today;
         document.getElementById('timeEntry').value = time;
         document.getElementById('dateDeparture').value = today;
         document.getElementById('timeDeparture').value = time;
-        
-        // Sala 1 ya está seleccionada por defecto en el radio button
+
+        // Sala A ya está seleccionada por defecto en el radio button
     }
 
     // Configurar evento para mostrar campo "Otro destino"
@@ -225,7 +230,7 @@ function configurarFormulario() {
                         window.location.href = 'listado.html';
                     }, 3000);
                 })
-                 .catch(error => {
+                .catch(error => {
                     console.error('Error al guardar: ', error);
                     mensaje.textContent = 'Error al guardar el registro: ' + error.message;
                     mensaje.className = 'mensaje error';

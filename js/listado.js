@@ -30,20 +30,20 @@ document.addEventListener('DOMContentLoaded', function () {
             // Evento click para ver el registro completo
             const nombreElement = registroItem.querySelector('.registro-nombre');
             nombreElement.style.cursor = 'pointer';
-            nombreElement.addEventListener('click', function() {
+            nombreElement.addEventListener('click', function () {
                 verRegistroCompleto(registro);
             });
 
             // Evento para botón editar
             const btnEditar = registroItem.querySelector('.btn-editar');
-            btnEditar.addEventListener('click', function(e) {
+            btnEditar.addEventListener('click', function (e) {
                 e.stopPropagation();
                 editarRegistro(registroId, registro);
             });
 
             // Evento para botón eliminar
             const btnEliminar = registroItem.querySelector('.btn-eliminar');
-            btnEliminar.addEventListener('click', function(e) {
+            btnEliminar.addEventListener('click', function (e) {
                 e.stopPropagation();
                 eliminarRegistro(registroId);
             });
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
         params.append('room', encodeURIComponent(registro.room));
         params.append('religion', encodeURIComponent(registro.religion));
         params.append('destinations', encodeURIComponent(registro.destinations));
-        
+
         window.location.href = `billboard.html?${params.toString()}`;
     }
 
@@ -81,24 +81,33 @@ document.addEventListener('DOMContentLoaded', function () {
         params.append('room', encodeURIComponent(registro.room));
         params.append('religion', encodeURIComponent(registro.religion));
         params.append('destinations', encodeURIComponent(registro.destinations));
-        
+
         window.location.href = `editar.html?${params.toString()}`;
     }
 
     // Función para eliminar registro
     function eliminarRegistro(id) {
-        if (confirm('¿Estás seguro de que deseas eliminar este registro?')) {
-            db.collection('registros').doc(id).delete()
-                .then(() => {
-                    alert('Registro eliminado correctamente');
-                    // Recargar los registros
-                    cargarRegistros();
-                })
-                .catch(error => {
-                    console.error('Error al eliminar registro: ', error);
-                    alert('Error al eliminar el registro');
-                });
-        }
+        db.collection('registros').doc(id).delete()
+            .then(() => {
+                mensaje.textContent = 'Registro eliminado correctamente';
+                mensaje.className = 'mensaje success';
+                // Recargar los registros
+                cargarRegistros();
+                setTimeout(() => {
+                    mensaje.textContent = '';
+                    mensaje.className = '';
+                }, 3000)
+            })
+            .catch(error => {
+                console.error('Error al eliminar registro: ', error);
+                mensaje.textContent = 'Error al eliminar el registro: ' + error.message;
+                mensaje.className = 'mensaje error';
+                setTimeout(() => {
+                    mensaje.textContent = '';
+                    mensaje.className = '';
+                }, 3000)
+            });
+
     }
 
     // Función para cargar registros
@@ -123,4 +132,54 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Cargar registros iniciales
     cargarRegistros();
+
+    const btn = document.getElementById('dividirBtn');
+    const salasContainer = document.getElementById('salasContainer');
+
+    // Datos para los desplegables (puedes modificarlos según necesites)
+    const datosSala = ['Opción 1', 'Opción 2', 'Opción 3', 'Opción 4', 'Opción 5'];
+
+    btn.addEventListener('click', function () {
+        // Limpiar el contenedor si ya hay contenido
+        salasContainer.innerHTML = '';
+
+        // Crear elementos para Sala A
+        const containerA = document.createElement('div');
+        containerA.className = 'sala-container';
+
+        const labelA = document.createElement('label');
+        labelA.textContent = 'Sala A';
+
+        const selectA = document.createElement('select');
+        datosSala.forEach(function (opcion) {
+            const option = document.createElement('option');
+            option.value = opcion;
+            option.textContent = opcion;
+            selectA.appendChild(option);
+        });
+
+        containerA.appendChild(labelA);
+        containerA.appendChild(selectA);
+        salasContainer.appendChild(containerA);
+
+        // Crear elementos para Sala B
+        const containerB = document.createElement('div');
+        containerB.className = 'sala-container';
+
+        const labelB = document.createElement('label');
+        labelB.textContent = 'Sala B';
+
+        const selectB = document.createElement('select');
+        datosSala.forEach(function (opcion) {
+            const option = document.createElement('option');
+            option.value = opcion;
+            option.textContent = opcion;
+            selectB.appendChild(option);
+        });
+
+        containerB.appendChild(labelB);
+        containerB.appendChild(selectB);
+        salasContainer.appendChild(containerB);
+    });
+
 });
